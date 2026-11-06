@@ -130,6 +130,9 @@ main{max-width:1320px;margin:0 auto;padding:16px}
 .det li::before{content:"—";position:absolute;left:0;color:var(--amber-dim)}
 .det aside{display:grid;gap:8px;align-content:start}
 .det aside a{font:400 13px var(--mono)}
+.det aside a.live{display:inline-block;background:var(--key);color:#000;font-weight:600;padding:5px 10px;justify-self:start;text-decoration:none}
+.det aside a.live:hover{background:var(--amber)}
+.badge{font:600 10px var(--mono);color:#000;background:var(--up);padding:1px 5px;margin-left:8px;vertical-align:1px}
 .det aside .lbl{font:400 11px var(--mono);color:var(--muted)}
 
 /* news + exp */
@@ -310,38 +313,40 @@ footer{max-width:1320px;margin:0 auto;padding:4px 16px 32px;font:400 11px var(--
 const SS = "https://9numbers0.substack.com/p/";
 const GH = "https://github.com/9Anthony0/";
 const PROJECTS = [
-  {tk:"SURG", name:"Surgical gesture & anomaly detection", stack:"PyTorch · asyncio · Streamlit", metric:"3.1 ms p99", yr:"2026",
+  {tk:"SURG", live:"https://petrescu-surgical-ai.streamlit.app", name:"Surgical gesture & anomaly detection", stack:"PyTorch · asyncio · Streamlit", metric:"3.1 ms p99", yr:"2026",
    pts:["Attention-augmented causal Temporal Convolutional Network reads 8-DOF robotic instrument kinematics at 30 Hz.",
         "Streaming inference with asyncio and fixed ring buffers hits about 3.1 ms p99 latency, against a 50 ms budget.",
         "Two heads share one backbone: one names the gesture (suturing, dissection, idle), the other flags tremors and micro-hesitations.",
         "A Streamlit 'Surgeon Console' shows a live 3D instrument path, workflow timeline and tiered safety alerts."],
    links:[["Code",GH+"intraoperative-surgical-ai"],["Write-up",SS+"catching-surgical-errors-in-3-milliseconds"]]},
-  {tk:"WC26", name:"2026 World Cup prediction engine", stack:"Python · NumPy · Plotly", metric:"10,000 runs", yr:"2026",
+  {tk:"WC26", live:"https://petrescu-worldcup.streamlit.app", name:"2026 World Cup prediction engine", stack:"Python · NumPy · Plotly", metric:"10,000 runs", yr:"2026",
    pts:["Monte Carlo simulation of the 48-team tournament with Poisson goal scoring and exponential Elo scaling.",
         "Team profiles combine squad depth, star ratings, recent form, manager experience and macroeconomic factors.",
         "Penalty damping (0.25) compresses the favorite's edge in shootouts; the model flagged Paraguay and Morocco as live upset threats, and both won shootouts.",
         "Ranked Spain and Argentina as the two strongest sides. They met in the final."],
    links:[["Code",GH+"2026-World-Cup-Prediction-Engine"],["Model write-up",SS+"normalizing-chaos-2026-world-cup"],["Post-mortem",SS+"i-predicted-the-world-cup-kind-of"]]},
-  {tk:"MAST", name:"2027 Masters predictor", stack:"XGBoost · LightGBM · Streamlit", metric:"5-model stack", yr:"2026",
+  {tk:"MAST", live:"https://petrescu-masters.streamlit.app", name:"2027 Masters predictor", stack:"XGBoost · LightGBM · Streamlit", metric:"5-model stack", yr:"2026",
    pts:["Stacking ensemble of XGBoost, LightGBM, random forest, ridge and a neural net, with a meta-learner on top.",
         "Augusta-specific features: strokes gained splits, course experience, past-winner status and an Amen Corner composite.",
         "10,000 simulated tournaments turn projected scores into win probabilities and expected finishes."],
    links:[["Code",GH+"Master-s-Tournament-Predictor"],["Write-up",SS+"predicting-the-2027-masters-building"]]},
-  {tk:"MDVO", name:"Macro-driven value optimizer", stack:"Python · Streamlit", metric:"Macro → weights", yr:"2026",
+  {tk:"MDVO", live:"https://petrescu-mdvo.streamlit.app", name:"Macro-driven value optimizer", stack:"Python · Streamlit", metric:"Macro → weights", yr:"2026",
    pts:["Capstone pipeline that carries a macro scenario all the way through to stock selection.",
         "Regime shifts feed intrinsic valuations, which feed optimal portfolio weights, in one continuous model."],
    links:[["Code",GH+"Macro-Driven-Value-Optimizer-MDVO-Capstone-Project"],["Write-up",SS+"cascading-alpha-bridging-the-gap"]]},
-  {tk:"PORT", name:"Live portfolio optimizer", stack:"Python · Streamlit · Plotly", metric:"Efficient frontier", yr:"2026",
+  {tk:"PORT", live:"https://petrescu-portfolio.streamlit.app", name:"Live portfolio optimizer", stack:"Python · Streamlit · Plotly", metric:"Efficient frontier", yr:"2026",
    pts:["Pulls live market data, builds covariance matrices and plots the efficient frontier.",
         "Lets you stress-test allocations and find the best risk-adjusted mix."],
    links:[["Code",GH+"Portfolio-Optimization-Tool"],["Write-up",SS+"implementing-modern-portfolio-theory"]]},
-  {tk:"DCF", name:"Live DCF valuation engine", stack:"Python · yfinance · Streamlit", metric:"5×5 sensitivity", yr:"2026",
+  {tk:"DCF", live:"https://petrescu-dcf.streamlit.app", name:"Live DCF valuation engine", stack:"Python · yfinance · Streamlit", metric:"5×5 sensitivity", yr:"2026",
    pts:["Enter any ticker; it pulls price, free cash flow, cash and debt, and sets WACC from CAPM and growth from 3-year revenue CAGR.",
         "Base, bull and bear scenarios side by side, bridging enterprise value to equity value per share.",
         "A 5×5 WACC-by-growth sensitivity matrix shows how fragile the valuation is against the market price."],
    links:[["Code",GH+"DCF-Valuation-Tool"],["Write-up",SS+"demystifying-intrinsic-valuation"]]},
-  {tk:"TIX", name:"Sports ticket website", stack:"Python · HTML", metric:"Full-stack", yr:"2026",
-   pts:["Web app for browsing and buying sports tickets, with HTML templates, a seeded database and Google App Engine config."],
+  {tk:"TIX", name:"Purdue student ticket exchange", stack:"Flask · SQLAlchemy · SQLite", metric:"Atomic checkout", yr:"2026",
+   pts:["Students list, filter and buy tickets to Boilermaker home games across football, basketball and volleyball.",
+        "Each purchase runs as one database transaction that re-checks availability, so a ticket can't be sold twice.",
+        "Four-table relational model with indexes on sport, price and status; deploys to Google App Engine."],
    links:[["Code",GH+"Sports-Ticket-Website"]]}
 ];
 const POSTS = [
@@ -382,10 +387,10 @@ PROJECTS.forEach((p,i)=>{
   const row = document.createElement("tr");
   row.className="row"; row.id="p-"+p.tk.toLowerCase(); row.tabIndex=0;
   row.setAttribute("aria-expanded","false"); row.setAttribute("aria-controls","d-"+i);
-  row.innerHTML=`<td class="tk">${p.tk}</td><td class="nm">${p.name}</td><td class="stack">${p.stack}</td><td class="metric">${p.metric}</td>`;
+  row.innerHTML=`<td class="tk">${p.tk}</td><td class="nm">${p.name}</td><td class="stack">${p.stack}</td><td class="metric">${p.metric}${p.live?' <span class="badge">LIVE</span>':""}</td>`;
   const det = document.createElement("tr");
   det.className="detail"; det.id="d-"+i; det.hidden=true;
-  det.innerHTML=`<td colspan="4"><div class="det"><ul>${p.pts.map(t=>`<li>${t}</li>`).join("")}</ul><aside><span class="lbl">Links</span>${p.links.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener">${l}</a>`).join("")}</aside></div></td>`;
+  det.innerHTML=`<td colspan="4"><div class="det"><ul>${p.pts.map(t=>`<li>${t}</li>`).join("")}</ul><aside><span class="lbl">Links</span>${p.live?`<a class="live" href="${p.live}" target="_blank" rel="noopener">Try it live</a>`:""}${p.links.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener">${l}</a>`).join("")}</aside></div></td>`;
   const toggle=(force)=>{const open = force ?? det.hidden; det.hidden=!open; row.classList.toggle("open",open); row.setAttribute("aria-expanded",String(open));};
   row.addEventListener("click",e=>{ if(!e.target.closest("a")) toggle(); });
   row.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();} });
