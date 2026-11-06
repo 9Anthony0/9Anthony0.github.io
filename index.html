@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anthony Petrescu — Terminal</title>
 <meta name="description" content="Anthony Petrescu: Purdue Finance + Computer Science '27. Real-time ML, quantitative finance engines and sports prediction models.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://9anthony0.github.io/">
+<meta property="og:title" content="Anthony Petrescu | Finance + CS, Purdue '27">
+<meta property="og:description" content="Live quant, ML and sports prediction projects: a 3 ms surgical AI pipeline, a World Cup Monte Carlo engine, DCF and portfolio tools. Open to 2027 roles.">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -77,6 +82,11 @@ main{max-width:1320px;margin:0 auto;padding:16px}
 .des h1{font:800 clamp(34px,4.4vw,56px)/1.02 var(--mono);letter-spacing:-.03em;color:var(--text)}
 .des h1 span{display:block;color:var(--amber)}
 .des .tag{font-size:20px;line-height:1.4;margin:18px 0 22px;max-width:34ch}
+.about{color:var(--muted);font-size:16px;line-height:1.55;margin:-8px 0 22px;max-width:52ch}
+.about b{color:var(--text);font-weight:500}
+.btn.primary{background:var(--key);color:#000;border-color:var(--key);font-weight:600}
+.btn.primary kbd{color:#000}
+.btn.primary:hover{background:var(--amber);border-color:var(--amber)}
 .kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;font:400 13px var(--mono);border-top:1px solid var(--rule);padding-top:16px}
 .kv dt{color:var(--amber)}
 .kv dd{color:var(--text)}
@@ -221,14 +231,17 @@ footer{max-width:1320px;margin:0 auto;padding:4px 16px 32px;font:400 11px var(--
       <div class="pb">
         <h1 id="des-h">Anthony<span>Petrescu</span></h1>
         <p class="tag">I build systems that put numbers on uncertain things: markets, tournaments, and surgeons' hands.</p>
+        <p class="about">I study Finance and Computer Science at Purdue and like turning financial theory into software people can actually use. If a problem involves applied AI, market data or predicting the unpredictable, I'm probably building something to figure it out. Right now that's a fintech startup I co-founded. Off the keyboard: RA running a $96K hall budget, Eagle Scout, Latin ballroom.</p>
         <dl class="kv">
           <dt>Study</dt><dd>Finance + Computer Science (ML track), Purdue</dd>
+          <dt>Seeking</dt><dd>Full-time roles from summer 2027 where finance meets engineering: quant, ML, fintech software, technical product</dd>
           <dt>Graduates</dt><dd>May 2027</dd>
           <dt>Now</dt><dd>Co-founder, stealth fintech startup</dd>
           <dt>Stack</dt><dd>Python, PyTorch, scikit-learn, Streamlit, SQL, C++</dd>
           <dt>Based</dt><dd>West Lafayette, IN / Eden Prairie, MN</dd>
         </dl>
         <div class="links">
+          <a class="btn primary" href="Anthony_Petrescu_Resume.pdf" target="_blank" rel="noopener"><kbd>CV</kbd>Resume (PDF)</a>
           <a class="btn" href="https://github.com/9Anthony0" target="_blank" rel="noopener"><kbd>GH</kbd>GitHub</a>
           <a class="btn" href="https://9numbers0.substack.com" target="_blank" rel="noopener"><kbd>SS</kbd>Substack</a>
           <a class="btn" href="https://www.linkedin.com/in/anthony-petrescu/" target="_blank" rel="noopener"><kbd>LI</kbd>LinkedIn</a>
@@ -298,6 +311,7 @@ footer{max-width:1320px;margin:0 auto;padding:4px 16px 32px;font:400 11px var(--
     <div class="pb">
       <p>Hiring for quant, ML or fintech engineering? I'd like to hear about it.</p>
       <div class="links" style="margin-top:0">
+        <a class="btn primary" href="Anthony_Petrescu_Resume.pdf" target="_blank" rel="noopener"><kbd>CV</kbd>Resume (PDF)</a>
         <a class="btn" href="mailto:anthonypetrescu@gmail.com"><kbd>@</kbd>anthonypetrescu@gmail.com</a>
         <button class="btn" id="copy-email" type="button" style="cursor:pointer"><kbd>⧉</kbd><span>Copy email</span></button>
         <a class="btn" href="https://www.linkedin.com/in/anthony-petrescu/" target="_blank" rel="noopener"><kbd>LI</kbd>LinkedIn</a>
@@ -462,12 +476,12 @@ const COMMANDS={
   WCUP:()=>{go("wcup");}, SIM:()=>{go("wcup"); run();}, RUN:()=>{go("wcup"); run();},
   PROJ:()=>go("proj"), PROJECTS:()=>go("proj"),
   NEWS:()=>go("news"), BLOG:()=>go("news"), WRITING:()=>go("news"),
-  HIST:()=>go("exp"), EXP:()=>go("exp"), CV:()=>go("exp"),
+  HIST:()=>go("exp"), EXP:()=>go("exp"), CV:()=>location.assign("Anthony_Petrescu_Resume.pdf"), RESUME:()=>location.assign("Anthony_Petrescu_Resume.pdf"),
   MSG:()=>go("contact"), CONTACT:()=>go("contact"), EMAIL:()=>go("contact"),
   GH:()=>location.assign("https://github.com/9Anthony0"), GITHUB:()=>location.assign("https://github.com/9Anthony0"),
   SURG:()=>openProj("surg"), WC26:()=>openProj("wc26"), MAST:()=>openProj("mast"), MDVO:()=>openProj("mdvo"), PORT:()=>openProj("port"), DCF:()=>openProj("dcf"), TIX:()=>openProj("tix")
 };
-const HELP="Commands: DES, WCUP, SIM, PROJ, NEWS, HIST, MSG, GH, or a project ticker (SURG, WC26, MAST, MDVO, PORT, DCF, TIX).";
+const HELP="Commands: DES, WCUP, SIM, PROJ, NEWS, HIST, CV, MSG, GH, or a project ticker (SURG, WC26, MAST, MDVO, PORT, DCF, TIX).";
 document.getElementById("cmd").addEventListener("submit",e=>{
   e.preventDefault(); const c=cmdIn.value.trim().toUpperCase().replace(/\s*<?GO>?$/,"");
   if(!c){ msg.textContent=HELP; return; }
