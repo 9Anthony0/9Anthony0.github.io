@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anthony Petrescu — Terminal</title>
+<meta name="description" content="Anthony Petrescu: Purdue Finance + Computer Science '27. Real-time ML, quantitative finance engines and sports prediction models.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;
+  --panel:#000;
+  --rule:#2b2b2b;
+  --amber:#ffb000;
+  --amber-dim:#a87400;
+  --text:#ecebe6;
+  --muted:#9a9890;
+  --key:#f5c400;
+  --bar:#1d4fa3;
+  --bar-text:#ffffff;
+  --link:#6fa8ff;
+  --up:#35d07f;
+  --down:#ff5a4f;
+  --mono:"Martian Mono",ui-monospace,monospace;
+  --sans:"IBM Plex Sans Condensed","Arial Narrow",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--key);outline-offset:2px}
+.mono{font-family:var(--mono)}
+
+/* ---------- top chrome ---------- */
+.chrome{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.cmdline{display:flex;align-items:center;gap:12px;padding:8px 16px;font-family:var(--mono);font-size:13px}
+.cmdline .who{color:var(--amber);font-weight:600;white-space:nowrap}
+.cmdline form{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+.cmdline label{color:var(--muted);white-space:nowrap}
+.cmdline input{flex:1;min-width:60px;background:#111;border:1px solid var(--rule);color:var(--text);font:inherit;padding:5px 8px;text-transform:uppercase}
+.cmdline input::placeholder{color:#5e5c56;text-transform:none}
+.go{background:var(--key);color:#000;border:0;font:600 12px var(--mono);padding:6px 10px;cursor:pointer}
+.clock{color:var(--muted);white-space:nowrap}
+.clock b{color:var(--text);font-weight:400}
+.fkeys{display:flex;gap:2px;padding:0 16px 8px;overflow-x:auto;scrollbar-width:none}
+.fkeys::-webkit-scrollbar{display:none}
+.fkeys a{display:flex;align-items:baseline;gap:6px;background:#141414;color:var(--text);font:400 12px var(--mono);padding:5px 10px;white-space:nowrap;text-decoration:none;border-top:2px solid transparent}
+.fkeys a kbd{background:var(--key);color:#000;font:600 11px var(--mono);padding:1px 5px}
+.fkeys a:hover,.fkeys a.on{border-top-color:var(--amber);background:#1c1c1c}
+.msg{font-family:var(--mono);font-size:12px;color:var(--amber);padding:0 16px 6px;min-height:0}
+.msg:empty{display:none}
+
+.tape{overflow:hidden;border-top:1px solid var(--rule);background:#050505;font:400 12px var(--mono);white-space:nowrap}
+.tape-inner{display:inline-flex;animation:tape 60s linear infinite;padding:6px 0}
+.tape span{padding:0 22px;color:var(--muted)}
+.tape b{color:var(--amber);font-weight:600;margin-right:8px}
+.tape i{font-style:normal;color:var(--up)}
+.tape:hover .tape-inner{animation-play-state:paused}
+@keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- panels ---------- */
+main{max-width:1320px;margin:0 auto;padding:16px}
+.panel{border:1px solid var(--rule);background:var(--panel);margin-bottom:16px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bar);color:var(--bar-text);padding:5px 12px;font:600 12px var(--mono)}
+.ph .fn{background:var(--key);color:#000;padding:1px 6px;margin-right:10px}
+.ph small{font-weight:400;opacity:.8}
+.pb{padding:20px}
+
+.grid-hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px}
+.grid-hero .panel{margin-bottom:0}
+.hero-wrap{margin-bottom:16px}
+
+/* DES panel */
+.des h1{font:800 clamp(34px,4.4vw,56px)/1.02 var(--mono);letter-spacing:-.03em;color:var(--text)}
+.des h1 span{display:block;color:var(--amber)}
+.des .tag{font-size:20px;line-height:1.4;margin:18px 0 22px;max-width:34ch}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 18px;font:400 13px var(--mono);border-top:1px solid var(--rule);padding-top:16px}
+.kv dt{color:var(--amber)}
+.kv dd{color:var(--text)}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);padding:8px 12px;font:400 13px var(--mono);color:var(--text);text-decoration:none;background:#0d0d0d}
+.btn:hover{border-color:var(--amber);text-decoration:none}
+.btn kbd{color:var(--amber);font:600 11px var(--mono)}
+
+/* WCUP panel */
+.sim-top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+.sim-top p{max-width:52ch;color:var(--muted);font-size:15px}
+.sim-top p b{color:var(--text);font-weight:500}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font:400 12px var(--mono)}
+.controls label{color:var(--muted);display:flex;align-items:center;gap:8px}
+.controls input[type=range]{accent-color:var(--amber);width:120px}
+.controls output{color:var(--text);min-width:34px}
+.run{background:var(--key);color:#000;border:0;font:600 13px var(--mono);padding:9px 14px;cursor:pointer}
+.run:disabled{opacity:.6;cursor:progress}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--rule);margin-bottom:16px}
+.stats div{padding:10px 12px;border-right:1px solid var(--rule)}
+.stats div:last-child{border-right:0}
+.stats dt{font:400 11px var(--mono);color:var(--amber)}
+.stats dd{font:400 18px var(--mono);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars{display:grid;gap:5px;font:400 12px var(--mono)}
+.bar-row{display:grid;grid-template-columns:110px 1fr 58px;align-items:center;gap:10px}
+.bar-row .nm{color:var(--text)}
+.bar-row .track{height:14px;background:#111;position:relative}
+.bar-row .fill{position:absolute;inset:0 auto 0 0;background:var(--amber);width:0;transition:width .12s linear}
+.bar-row.lead .fill{background:var(--up)}
+.bar-row .pc{text-align:right;color:var(--text)}
+.footnote{margin-top:14px;font-size:13px;color:var(--muted)}
+.footnote a{white-space:nowrap}
+
+/* projects monitor */
+.mon{width:100%;border-collapse:collapse;font:400 13px var(--mono)}
+.mon th{text-align:left;font-weight:400;color:var(--amber);padding:10px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+.mon td{padding:12px;border-bottom:1px solid #1a1a1a;vertical-align:top}
+.mon tr.row{cursor:pointer}
+.mon tr.row:hover td,.mon tr.row.open td{background:#0f0f0f}
+.mon .tk{color:var(--amber);font-weight:600;white-space:nowrap}
+.mon .tk::before{content:"▸ ";color:var(--muted);font-weight:400}
+.mon tr.open .tk::before{content:"▾ "}
+.mon .nm{font-family:var(--sans);font-size:17px;color:var(--text)}
+.mon .stack{color:var(--muted)}
+.mon .metric{color:var(--up);white-space:nowrap}
+.mon tr.detail td{padding:0 12px 22px 44px;background:#0f0f0f}
+.mon tr.detail[hidden]{display:none}
+.det{display:grid;grid-template-columns:minmax(0,3fr) minmax(220px,1fr);gap:28px;font-family:var(--sans);font-size:16px}
+.det ul{list-style:none;display:grid;gap:8px;max-width:72ch}
+.det li{padding-left:18px;position:relative}
+.det li::before{content:"—";position:absolute;left:0;color:var(--amber-dim)}
+.det aside{display:grid;gap:8px;align-content:start}
+.det aside a{font:400 13px var(--mono)}
+.det aside .lbl{font:400 11px var(--mono);color:var(--muted)}
+
+/* news + exp */
+.grid-two{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px}
+.grid-two .panel{margin-bottom:0}
+.news{list-style:none}
+.news li{display:grid;grid-template-columns:76px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid #1a1a1a}
+.news li:last-child{border-bottom:0}
+.news time{font:400 12px var(--mono);color:var(--amber);padding-top:3px}
+.news a{color:var(--text);font-size:17px;line-height:1.3}
+.news a:hover{color:var(--link)}
+.news .sub{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.news .series{display:inline-block;font:400 10px var(--mono);color:#000;background:var(--amber);padding:0 5px;margin-left:6px;vertical-align:2px}
+.more{margin-top:12px;font:400 13px var(--mono)}
+
+.exp{list-style:none}
+.exp li{padding:12px 0;border-bottom:1px solid #1a1a1a}
+.exp li:last-child{border-bottom:0}
+.exp .when{font:400 12px var(--mono);color:var(--amber)}
+.exp h3{font-size:17px;font-weight:600;margin-top:2px}
+.exp h3 span{font-weight:400;color:var(--muted)}
+.exp p{color:var(--muted);font-size:15px;margin-top:3px}
+.edu{border-top:1px solid var(--rule);margin-top:6px;padding-top:14px;font-size:15px;color:var(--muted)}
+.edu b{color:var(--text);font-weight:600}
+
+.contact .pb{display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.contact p{font-size:20px;max-width:40ch}
+footer{max-width:1320px;margin:0 auto;padding:4px 16px 32px;font:400 11px var(--mono);color:#5e5c56}
+
+@media (max-width:980px){
+  .grid-hero,.grid-two{grid-template-columns:1fr}
+  .grid-two .panel+.panel{margin-top:0}
+  .det{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  body{font-size:16px}
+  .cmdline{flex-wrap:wrap}
+  .cmdline .clock{display:none}
+  .cmdline form{order:3;flex-basis:100%}
+  .pb{padding:16px}
+  .mon thead{display:none}
+  .mon tr.row{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:12px 0;border-bottom:1px solid #1a1a1a}
+  .mon tr.row td{border:0;padding:0 12px}
+  .mon tr.row .nm{grid-column:1/-1;padding-top:4px}
+  .mon tr.row .stack{grid-column:1/-1;font-size:12px}
+  .mon tr.row .yr{display:none}
+  .mon tr.detail td{display:block;padding:4px 12px 20px}
+  .bar-row{grid-template-columns:86px 1fr 50px}
+  .stats dd{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .tape-inner{animation:none}
+  .bar-row .fill{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <div class="cmdline">
+    <span class="who">PETRESCU &lt;EQUITY&gt;</span>
+    <form id="cmd" autocomplete="off">
+      <label for="cmd-in">Command</label>
+      <input id="cmd-in" type="text" placeholder="Try WCUP, PROJ, SURG, NEWS or HELP" aria-describedby="cmd-msg" spellcheck="false">
+      <button class="go" type="submit">&lt;GO&gt;</button>
+    </form>
+    <span class="clock" aria-label="Current time in New York">NY <b id="clock">--:--:--</b></span>
+  </div>
+  <p class="msg" id="cmd-msg" role="status" aria-live="polite"></p>
+  <nav class="fkeys" aria-label="Sections">
+    <a href="#des" data-k="1"><kbd>1</kbd>Profile</a>
+    <a href="#wcup" data-k="2"><kbd>2</kbd>Live model</a>
+    <a href="#proj" data-k="3"><kbd>3</kbd>Projects</a>
+    <a href="#news" data-k="4"><kbd>4</kbd>Writing</a>
+    <a href="#exp" data-k="5"><kbd>5</kbd>Experience</a>
+    <a href="#contact" data-k="6"><kbd>6</kbd>Contact</a>
+  </nav>
+  <div class="tape" aria-hidden="true"><div class="tape-inner" id="tape"></div></div>
+</header>
+
+<main>
+  <div class="grid-hero hero-wrap">
+    <section class="panel des" id="des" aria-labelledby="des-h">
+      <div class="ph"><span><span class="fn">DES</span>Profile</span><small>Purdue '27</small></div>
+      <div class="pb">
+        <h1 id="des-h">Anthony<span>Petrescu</span></h1>
+        <p class="tag">I build systems that put numbers on uncertain things: markets, tournaments, and surgeons' hands.</p>
+        <dl class="kv">
+          <dt>Study</dt><dd>Finance + Computer Science (ML track), Purdue</dd>
+          <dt>Graduates</dt><dd>May 2027</dd>
+          <dt>Now</dt><dd>Co-founder, stealth fintech startup</dd>
+          <dt>Stack</dt><dd>Python, PyTorch, scikit-learn, Streamlit, SQL, C++</dd>
+          <dt>Based</dt><dd>West Lafayette, IN / Eden Prairie, MN</dd>
+        </dl>
+        <div class="links">
+          <a class="btn" href="https://github.com/9Anthony0" target="_blank" rel="noopener"><kbd>GH</kbd>GitHub</a>
+          <a class="btn" href="https://9numbers0.substack.com" target="_blank" rel="noopener"><kbd>SS</kbd>Substack</a>
+          <a class="btn" href="https://www.linkedin.com/in/anthony-petrescu/" target="_blank" rel="noopener"><kbd>LI</kbd>LinkedIn</a>
+          <a class="btn" href="#contact"><kbd>@</kbd>Email</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="wcup" aria-labelledby="wcup-h">
+      <div class="ph"><span><span class="fn">WCUP</span><span id="wcup-h">Knockout Monte Carlo</span></span><small>runs in your browser</small></div>
+      <div class="pb">
+        <div class="sim-top">
+          <p>A pocket version of my <b>2026 World Cup engine</b>. It plays a 16-team knockout bracket thousands of times using Elo win odds, and shrinks the favorite's edge in penalty shootouts. Lower the Elo scaling to make upsets more likely.</p>
+          <div class="controls">
+            <label for="scale">Elo scaling <input id="scale" type="range" min="0.4" max="1.6" step="0.1" value="1"><output id="scale-out" for="scale">1.0</output></label>
+            <button class="run" id="run" type="button">Run 10,000 sims</button>
+          </div>
+        </div>
+        <dl class="stats">
+          <div><dt>Simulations</dt><dd id="s-n">0</dd></div>
+          <div><dt>Favorite</dt><dd id="s-fav">–</dd></div>
+          <div><dt>Most common final</dt><dd id="s-final">–</dd></div>
+        </dl>
+        <div class="bars" id="bars" aria-live="off"></div>
+        <p class="footnote">Ratings here are rounded, illustrative Elo values. The real engine adds squad depth, form, macro factors and host effects. It ranked Spain and Argentina as the two strongest sides, and they met in the final. <a href="https://9numbers0.substack.com/p/i-predicted-the-world-cup-kind-of" target="_blank" rel="noopener">Read the post-mortem</a></p>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel" id="proj" aria-labelledby="proj-h">
+    <div class="ph"><span><span class="fn">PROJ</span><span id="proj-h">Projects</span></span><small>Select a row for details</small></div>
+    <div style="overflow-x:auto">
+      <table class="mon">
+        <thead><tr><th scope="col">Ticker</th><th scope="col">Project</th><th scope="col">Stack</th><th scope="col">Key figure</th></tr></thead>
+        <tbody id="proj-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid-two">
+    <section class="panel" id="news" aria-labelledby="news-h">
+      <div class="ph"><span><span class="fn">NEWS</span><span id="news-h">Writing</span></span><small>from Substack</small></div>
+      <div class="pb">
+        <ul class="news" id="news-list"></ul>
+        <p class="more"><a href="https://9numbers0.substack.com/archive" target="_blank" rel="noopener">See every post on Substack</a></p>
+      </div>
+    </section>
+
+    <section class="panel" id="exp" aria-labelledby="exp-h">
+      <div class="ph"><span><span class="fn">HIST</span><span id="exp-h">Experience</span></span><small>most recent first</small></div>
+      <div class="pb">
+        <ol class="exp">
+          <li><div class="when">Feb 2026 – now</div><h3>Co-founder <span>Stealth startup</span></h3><p>Consumer onboarding infrastructure. Client-side models that turn user hesitation into measurable signals.</p></li>
+          <li><div class="when">Aug 2024 – now</div><h3>Resident Assistant <span>Purdue University</span></h3><p>Runs a $96,000 annual budget across 36+ hall events.</p></li>
+          <li><div class="when">May – Aug 2025</div><h3>Technical Sales Intern, Controls <span>Trane Technologies</span></h3><p>Priced and specified controls jobs worth up to $85,000. Turned account analysis into 15+ new opportunities in Salesforce.</p></li>
+          <li><div class="when">Jan – May 2024</div><h3>IoT &amp; ML Engineer <span>Vertically Integrated Projects, Purdue</span></h3><p>Predicted lab safety hazards from 13+ sensor streams. Presented at Purdue's Spring Undergraduate Research Conference.</p></li>
+          <li><div class="when">Aug – Oct 2022</div><h3>Intern <span>EAM-Mosca</span></h3><p>Improved sonotrode placement on packaging lines and built performance tracking.</p></li>
+          <li><div class="when">2018 – 2024</div><h3>Co-founder <span>Global Insight Group</span></h3><p>Family company using drones to collect inspection data on homes, facilities and power assets.</p></li>
+        </ol>
+        <p class="edu"><b>Also:</b> Eagle Scout · Dean's List · DECA International top case-study scorer · Latin ballroom dance team</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel contact" id="contact" aria-labelledby="contact-h" style="margin-top:16px">
+    <div class="ph"><span><span class="fn">MSG</span><span id="contact-h">Contact</span></span><small>Open to 2027 roles</small></div>
+    <div class="pb">
+      <p>Hiring for quant, ML or fintech engineering? I'd like to hear about it.</p>
+      <div class="links" style="margin-top:0">
+        <a class="btn" href="mailto:anthonypetrescu@gmail.com"><kbd>@</kbd>anthonypetrescu@gmail.com</a>
+        <button class="btn" id="copy-email" type="button" style="cursor:pointer"><kbd>⧉</kbd><span>Copy email</span></button>
+        <a class="btn" href="https://www.linkedin.com/in/anthony-petrescu/" target="_blank" rel="noopener"><kbd>LI</kbd>LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Built by hand, no frameworks. Keys 1–6 jump between sections; press / to type a command.</footer>
+
+<script>
+/* ---------------- data ---------------- */
+const SS = "https://9numbers0.substack.com/p/";
+const GH = "https://github.com/9Anthony0/";
+const PROJECTS = [
+  {tk:"SURG", name:"Surgical gesture & anomaly detection", stack:"PyTorch · asyncio · Streamlit", metric:"3.1 ms p99", yr:"2026",
+   pts:["Attention-augmented causal Temporal Convolutional Network reads 8-DOF robotic instrument kinematics at 30 Hz.",
+        "Streaming inference with asyncio and fixed ring buffers hits about 3.1 ms p99 latency, against a 50 ms budget.",
+        "Two heads share one backbone: one names the gesture (suturing, dissection, idle), the other flags tremors and micro-hesitations.",
+        "A Streamlit 'Surgeon Console' shows a live 3D instrument path, workflow timeline and tiered safety alerts."],
+   links:[["Code",GH+"intraoperative-surgical-ai"],["Write-up",SS+"catching-surgical-errors-in-3-milliseconds"]]},
+  {tk:"WC26", name:"2026 World Cup prediction engine", stack:"Python · NumPy · Plotly", metric:"10,000 runs", yr:"2026",
+   pts:["Monte Carlo simulation of the 48-team tournament with Poisson goal scoring and exponential Elo scaling.",
+        "Team profiles combine squad depth, star ratings, recent form, manager experience and macroeconomic factors.",
+        "Penalty damping (0.25) compresses the favorite's edge in shootouts; the model flagged Paraguay and Morocco as live upset threats, and both won shootouts.",
+        "Ranked Spain and Argentina as the two strongest sides. They met in the final."],
+   links:[["Code",GH+"2026-World-Cup-Prediction-Engine"],["Model write-up",SS+"normalizing-chaos-2026-world-cup"],["Post-mortem",SS+"i-predicted-the-world-cup-kind-of"]]},
+  {tk:"MAST", name:"2027 Masters predictor", stack:"XGBoost · LightGBM · Streamlit", metric:"5-model stack", yr:"2026",
+   pts:["Stacking ensemble of XGBoost, LightGBM, random forest, ridge and a neural net, with a meta-learner on top.",
+        "Augusta-specific features: strokes gained splits, course experience, past-winner status and an Amen Corner composite.",
+        "10,000 simulated tournaments turn projected scores into win probabilities and expected finishes."],
+   links:[["Code",GH+"Master-s-Tournament-Predictor"],["Write-up",SS+"predicting-the-2027-masters-building"]]},
+  {tk:"MDVO", name:"Macro-driven value optimizer", stack:"Python · Streamlit", metric:"Macro → weights", yr:"2026",
+   pts:["Capstone pipeline that carries a macro scenario all the way through to stock selection.",
+        "Regime shifts feed intrinsic valuations, which feed optimal portfolio weights, in one continuous model."],
+   links:[["Code",GH+"Macro-Driven-Value-Optimizer-MDVO-Capstone-Project"],["Write-up",SS+"cascading-alpha-bridging-the-gap"]]},
+  {tk:"PORT", name:"Live portfolio optimizer", stack:"Python · Streamlit · Plotly", metric:"Efficient frontier", yr:"2026",
+   pts:["Pulls live market data, builds covariance matrices and plots the efficient frontier.",
+        "Lets you stress-test allocations and find the best risk-adjusted mix."],
+   links:[["Code",GH+"Portfolio-Optimization-Tool"],["Write-up",SS+"implementing-modern-portfolio-theory"]]},
+  {tk:"DCF", name:"Live DCF valuation engine", stack:"Python · yfinance · Streamlit", metric:"5×5 sensitivity", yr:"2026",
+   pts:["Enter any ticker; it pulls price, free cash flow, cash and debt, and sets WACC from CAPM and growth from 3-year revenue CAGR.",
+        "Base, bull and bear scenarios side by side, bridging enterprise value to equity value per share.",
+        "A 5×5 WACC-by-growth sensitivity matrix shows how fragile the valuation is against the market price."],
+   links:[["Code",GH+"DCF-Valuation-Tool"],["Write-up",SS+"demystifying-intrinsic-valuation"]]},
+  {tk:"TIX", name:"Sports ticket website", stack:"Python · HTML", metric:"Full-stack", yr:"2026",
+   pts:["Web app for browsing and buying sports tickets, with HTML templates, a seeded database and Google App Engine config."],
+   links:[["Code",GH+"Sports-Ticket-Website"]]}
+];
+const POSTS = [
+  ["2026-10-02","Catching Surgical Errors in 3 Milliseconds","Adapting a hesitation detector into a safety net for robotic surgery","catching-surgical-errors-in-3-milliseconds"],
+  ["2026-07-31","I Predicted the World Cup... Kind Of","What the model got right, what it got wrong","i-predicted-the-world-cup-kind-of"],
+  ["2026-06-30","Moving Out of Theory","The network effects of hesitation","moving-out-of-theory","Fintech series"],
+  ["2026-06-14","Firing Blanks: Why Your Stack Can't Perform When It Matters","The hypothesis","firing-blanks-why-your-stack-cant","Fintech series"],
+  ["2026-06-11","Normalizing Chaos (2026 World Cup Edition)","Modeling the World Cup as a multi-factor jump process","normalizing-chaos-2026-world-cup"],
+  ["2026-06-10","Reading the Plumbing: Why the 11-Second Gap is Finally Closing","Market signals","reading-the-plumbing-why-the-11-second","Fintech series"],
+  ["2026-06-04","Three Weeks Late to an Eleven-Second Crisis","The tooling gap","three-weeks-late-to-an-eleven-second","Fintech series"],
+  ["2026-06-01","30 Seconds Is Too Much For Most People","The problem space","the-most-expensive-30-seconds-in","Fintech series"],
+  ["2026-05-01","Cascading Alpha","From macro scenarios to stock selection","cascading-alpha-bridging-the-gap"],
+  ["2026-04-16","Predicting the 2027 Masters","An ML and simulation engine from the ground up","predicting-the-2027-masters-building"],
+  ["2026-04-08","Implementing Modern Portfolio Theory","Building a live optimizer","implementing-modern-portfolio-theory"],
+  ["2026-03-04","Demystifying Intrinsic Valuation","How I built a live DCF engine","demystifying-intrinsic-valuation"]
+];
+const TEAMS = [ // illustrative Elo, seeded bracket order 1..16
+  ["Spain",2150],["Argentina",2140],["France",2110],["England",2080],["Brazil",2060],["Portugal",2040],["Netherlands",2010],["Germany",1990],
+  ["Belgium",1960],["Morocco",1935],["Colombia",1925],["Uruguay",1915],["Norway",1905],["USA",1885],["Japan",1880],["Paraguay",1830]
+];
+
+/* ---------------- ticker tape ---------------- */
+const tapeItems = [
+  ["SURG","3.1 ms p99","16× under budget"],["WC26","ESP 1–0 ARG","model's top two met in final"],["MAST","10,000 sims","5-model stack"],
+  ["DCF","5×5","sensitivity grid"],["PORT","Frontier","live data"],["SUBSTACK","16 posts","since Feb 2026"],["PURDUE","CS + FIN","class of 2027"],["TRANE","$85K","largest controls proposal"]
+];
+const tapeHTML = tapeItems.map(([a,b,c])=>`<span><b>${a}</b>${b} <i>▲</i> ${c}</span>`).join("");
+document.getElementById("tape").innerHTML = tapeHTML + tapeHTML;
+
+/* ---------------- clock ---------------- */
+const clk = document.getElementById("clock");
+const fmt = new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+const tick = ()=>{clk.textContent = fmt.format(new Date())}; tick(); setInterval(tick,1000);
+
+/* ---------------- projects table ---------------- */
+const body = document.getElementById("proj-body");
+PROJECTS.forEach((p,i)=>{
+  const row = document.createElement("tr");
+  row.className="row"; row.id="p-"+p.tk.toLowerCase(); row.tabIndex=0;
+  row.setAttribute("aria-expanded","false"); row.setAttribute("aria-controls","d-"+i);
+  row.innerHTML=`<td class="tk">${p.tk}</td><td class="nm">${p.name}</td><td class="stack">${p.stack}</td><td class="metric">${p.metric}</td>`;
+  const det = document.createElement("tr");
+  det.className="detail"; det.id="d-"+i; det.hidden=true;
+  det.innerHTML=`<td colspan="4"><div class="det"><ul>${p.pts.map(t=>`<li>${t}</li>`).join("")}</ul><aside><span class="lbl">Links</span>${p.links.map(([l,u])=>`<a href="${u}" target="_blank" rel="noopener">${l}</a>`).join("")}</aside></div></td>`;
+  const toggle=(force)=>{const open = force ?? det.hidden; det.hidden=!open; row.classList.toggle("open",open); row.setAttribute("aria-expanded",String(open));};
+  row.addEventListener("click",e=>{ if(!e.target.closest("a")) toggle(); });
+  row.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle();} });
+  row._toggle=toggle;
+  body.append(row,det);
+});
+body.querySelector("tr.row")._toggle(true);
+
+/* ---------------- news ---------------- */
+const mon = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+document.getElementById("news-list").innerHTML = POSTS.map(([d,t,s,slug,series])=>{
+  const [y,m,dd]=d.split("-"); return `<li><time datetime="${d}">${mon[+m-1]} ${+dd}</time><div><a href="${SS+slug}" target="_blank" rel="noopener">${t}</a>${series?`<span class="series">${series}</span>`:""}<span class="sub">${s}</span></div></li>`;
+}).join("");
+
+/* ---------------- Monte Carlo ---------------- */
+const barsEl=document.getElementById("bars"), runBtn=document.getElementById("run");
+const scale=document.getElementById("scale"), scaleOut=document.getElementById("scale-out");
+const sN=document.getElementById("s-n"), sFav=document.getElementById("s-fav"), sFinal=document.getElementById("s-final");
+const PENALTY_DAMPING = 0.25, TOTAL = 10000, SHOW = 8;
+// bracket order so seeds 1 and 2 can only meet in the final
+const ORDER=[0,15,7,8,3,12,4,11,1,14,6,9,2,13,5,10];
+let wins, finals, done, running=false;
+
+function winProb(a,b,k){ return 1/(1+Math.pow(10,-((TEAMS[a][1]-TEAMS[b][1])*k)/400)); }
+function playMatch(a,b,k){
+  let p=winProb(a,b,k);
+  const pens = 0.28*(1-Math.abs(2*p-1));            // tight matches go to penalties more often
+  if(Math.random()<pens) p = 0.5+(p-0.5)*PENALTY_DAMPING;
+  return Math.random()<p ? a : b;
+}
+function simOnce(k){
+  let round=ORDER.slice();
+  while(round.length>2){ const nxt=[]; for(let i=0;i<round.length;i+=2) nxt.push(playMatch(round[i],round[i+1],k)); round=nxt; }
+  const champ=playMatch(round[0],round[1],k);
+  wins[champ]++; const key=[round[0],round[1]].sort((x,y)=>x-y).join("-"); finals[key]=(finals[key]||0)+1;
+}
+function render(){
+  const idx=TEAMS.map((_,i)=>i).sort((a,b)=>wins[b]-wins[a]).slice(0,SHOW);
+  const max=Math.max(1,...idx.map(i=>wins[i]));
+  barsEl.innerHTML=idx.map((i,r)=>{const pc=done?wins[i]/done*100:0;return `<div class="bar-row${r===0&&done?" lead":""}"><span class="nm">${TEAMS[i][0]}</span><span class="track"><span class="fill" style="width:${wins[i]/max*100}%"></span></span><span class="pc">${pc.toFixed(1)}%</span></div>`}).join("");
+  sN.textContent=done.toLocaleString();
+  if(done){
+    sFav.textContent=`${TEAMS[idx[0]][0]} ${(wins[idx[0]]/done*100).toFixed(1)}%`;
+    const [fk]=Object.entries(finals).sort((a,b)=>b[1]-a[1])[0]; const [x,y]=fk.split("-").map(Number);
+    sFinal.textContent=`${TEAMS[x][0].slice(0,3).toUpperCase()} v ${TEAMS[y][0].slice(0,3).toUpperCase()}`;
+  } else { sFav.textContent="–"; sFinal.textContent="–"; }
+}
+function reset(){ wins=new Array(TEAMS.length).fill(0); finals={}; done=0; render(); }
+function run(){
+  if(running) return; running=true; runBtn.disabled=true; runBtn.textContent="Simulating…"; reset();
+  const k=+scale.value, reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const step=()=>{ const n=reduce?TOTAL:Math.min(250,TOTAL-done); for(let i=0;i<n;i++) simOnce(k); done+=n; render();
+    if(done<TOTAL) requestAnimationFrame(step); else { running=false; runBtn.disabled=false; runBtn.textContent="Run again"; } };
+  requestAnimationFrame(step);
+}
+scale.addEventListener("input",()=>{scaleOut.textContent=(+scale.value).toFixed(1)});
+runBtn.addEventListener("click",run);
+reset();
+// run once when the panel first comes into view
+const io=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ io.disconnect(); run(); } },{threshold:.4});
+io.observe(document.getElementById("wcup"));
+
+/* ---------------- command line + keys ---------------- */
+const cmdIn=document.getElementById("cmd-in"), msg=document.getElementById("cmd-msg");
+const go=(id)=>{ const el=document.getElementById(id); if(el){ el.scrollIntoView({block:"start"}); } };
+const openProj=(tk)=>{ go("proj"); const r=document.getElementById("p-"+tk); if(r){ r._toggle(true); r.focus({preventScroll:true}); setTimeout(()=>r.scrollIntoView({block:"center"}),0);} };
+const COMMANDS={
+  DES:()=>go("des"), PROFILE:()=>go("des"),
+  WCUP:()=>{go("wcup");}, SIM:()=>{go("wcup"); run();}, RUN:()=>{go("wcup"); run();},
+  PROJ:()=>go("proj"), PROJECTS:()=>go("proj"),
+  NEWS:()=>go("news"), BLOG:()=>go("news"), WRITING:()=>go("news"),
+  HIST:()=>go("exp"), EXP:()=>go("exp"), CV:()=>go("exp"),
+  MSG:()=>go("contact"), CONTACT:()=>go("contact"), EMAIL:()=>go("contact"),
+  GH:()=>location.assign("https://github.com/9Anthony0"), GITHUB:()=>location.assign("https://github.com/9Anthony0"),
+  SURG:()=>openProj("surg"), WC26:()=>openProj("wc26"), MAST:()=>openProj("mast"), MDVO:()=>openProj("mdvo"), PORT:()=>openProj("port"), DCF:()=>openProj("dcf"), TIX:()=>openProj("tix")
+};
+const HELP="Commands: DES, WCUP, SIM, PROJ, NEWS, HIST, MSG, GH, or a project ticker (SURG, WC26, MAST, MDVO, PORT, DCF, TIX).";
+document.getElementById("cmd").addEventListener("submit",e=>{
+  e.preventDefault(); const c=cmdIn.value.trim().toUpperCase().replace(/\s*<?GO>?$/,"");
+  if(!c){ msg.textContent=HELP; return; }
+  if(c==="HELP"||c==="?"){ msg.textContent=HELP; return; }
+  if(COMMANDS[c]){ msg.textContent=""; cmdIn.value=""; cmdIn.blur(); COMMANDS[c](); }
+  else msg.textContent=`"${c}" isn't a command. ${HELP}`;
+});
+const keyMap={1:"des",2:"wcup",3:"proj",4:"news",5:"exp",6:"contact"};
+document.addEventListener("keydown",e=>{
+  if(e.target.matches("input,textarea")||e.metaKey||e.ctrlKey||e.altKey) return;
+  if(e.key==="/"){ e.preventDefault(); cmdIn.focus(); return; }
+  if(keyMap[e.key]) go(keyMap[e.key]);
+});
+// highlight current section key
+const navLinks=[...document.querySelectorAll(".fkeys a")];
+const so=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting){ navLinks.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id)); } }); },{rootMargin:"-40% 0px -55% 0px"});
+["des","wcup","proj","news","exp","contact"].forEach(id=>so.observe(document.getElementById(id)));
+
+/* ---------------- copy email ---------------- */
+document.getElementById("copy-email").addEventListener("click",async e=>{
+  const s=e.currentTarget.querySelector("span");
+  try{ await navigator.clipboard.writeText("anthonypetrescu@gmail.com"); s.textContent="Copied"; }
+  catch{ s.textContent="anthonypetrescu@gmail.com"; }
+  setTimeout(()=>s.textContent="Copy email",2500);
+});
+</script>
+</body>
+</html>
