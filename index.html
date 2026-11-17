@@ -237,7 +237,7 @@ footer{max-width:1320px;margin:0 auto;padding:4px 16px 32px;font:400 11px var(--
           <dt>Seeking</dt><dd>Full-time roles from summer 2027 where finance meets engineering: quant, ML, fintech software, technical product</dd>
           <dt>Graduates</dt><dd>May 2027</dd>
           <dt>Now</dt><dd>Co-founder, stealth fintech startup</dd>
-          <dt>Stack</dt><dd>Python, PyTorch, scikit-learn, Streamlit, SQL, C++</dd>
+          <dt>Stack</dt><dd>Python, PyTorch, scikit-learn, TypeScript, Next.js, SQL, C++</dd>
           <dt>Based</dt><dd>West Lafayette, IN / Eden Prairie, MN</dd>
         </dl>
         <div class="links">
@@ -333,6 +333,12 @@ const PROJECTS = [
         "Two heads share one backbone: one names the gesture (suturing, dissection, idle), the other flags tremors and micro-hesitations.",
         "A Streamlit 'Surgeon Console' shows a live 3D instrument path, workflow timeline and tiered safety alerts."],
    links:[["Code",GH+"intraoperative-surgical-ai"],["Write-up",SS+"catching-surgical-errors-in-3-milliseconds"]]},
+  {tk:"BLXV", name:"BloxVault: Letterboxd for Roblox games", stack:"Next.js · TypeScript · SQLite", metric:"Taste-graph recs", yr:"2026",
+   pts:["Paste a Roblox, TikTok or Instagram Reel link, or just a caption, and the right game lands in your vault with the clip attached.",
+        "Hidden Gem Score ranks games on vote-adjusted quality (Wilson lower bound), obscurity and freshness, so a 12-vote game can't outrank a proven one.",
+        "Plain-English vibe search (\u201cco-op horror under 500 players\u201d) becomes filters, and a tag-weighted taste graph recommends games and explains every pick.",
+        "Next.js 16 and React 19 front end, Zod-validated API routes over Roblox's web APIs, and Node's built-in SQLite, so it runs locally with zero setup."],
+   links:[["Code",GH+"bloxvault"]]},
   {tk:"WC26", live:"https://petrescu-worldcup.streamlit.app", name:"2026 World Cup prediction engine", stack:"Python · NumPy · Plotly", metric:"10,000 runs", yr:"2026",
    pts:["Monte Carlo simulation of the 48-team tournament with Poisson goal scoring and exponential Elo scaling.",
         "Team profiles combine squad depth, star ratings, recent form, manager experience and macroeconomic factors.",
@@ -384,7 +390,7 @@ const TEAMS = [ // illustrative Elo, seeded bracket order 1..16
 
 /* ---------------- ticker tape ---------------- */
 const tapeItems = [
-  ["SURG","3.1 ms p99","16× under budget"],["WC26","ESP 1–0 ARG","model's top two met in final"],["MAST","10,000 sims","5-model stack"],
+  ["SURG","3.1 ms p99","16× under budget"],["WC26","ESP 1–0 ARG","model's top two met in final"],["MAST","10,000 sims","5-model stack"],["BLXV","36 tags","taste-graph recs"],
   ["DCF","5×5","sensitivity grid"],["PORT","Frontier","live data"],["SUBSTACK","16 posts","since Feb 2026"],["PURDUE","CS + FIN","class of 2027"],["TRANE","$85K","largest controls proposal"]
 ];
 const tapeHTML = tapeItems.map(([a,b,c])=>`<span><b>${a}</b>${b} <i>▲</i> ${c}</span>`).join("");
@@ -479,9 +485,9 @@ const COMMANDS={
   HIST:()=>go("exp"), EXP:()=>go("exp"), CV:()=>location.assign("Anthony_Petrescu_Resume.pdf"), RESUME:()=>location.assign("Anthony_Petrescu_Resume.pdf"),
   MSG:()=>go("contact"), CONTACT:()=>go("contact"), EMAIL:()=>go("contact"),
   GH:()=>location.assign("https://github.com/9Anthony0"), GITHUB:()=>location.assign("https://github.com/9Anthony0"),
-  SURG:()=>openProj("surg"), WC26:()=>openProj("wc26"), MAST:()=>openProj("mast"), MDVO:()=>openProj("mdvo"), PORT:()=>openProj("port"), DCF:()=>openProj("dcf"), TIX:()=>openProj("tix")
+  SURG:()=>openProj("surg"), BLXV:()=>openProj("blxv"), WC26:()=>openProj("wc26"), MAST:()=>openProj("mast"), MDVO:()=>openProj("mdvo"), PORT:()=>openProj("port"), DCF:()=>openProj("dcf"), TIX:()=>openProj("tix")
 };
-const HELP="Commands: DES, WCUP, SIM, PROJ, NEWS, HIST, CV, MSG, GH, or a project ticker (SURG, WC26, MAST, MDVO, PORT, DCF, TIX).";
+const HELP="Commands: DES, WCUP, SIM, PROJ, NEWS, HIST, CV, MSG, GH, or a project ticker (SURG, BLXV, WC26, MAST, MDVO, PORT, DCF, TIX).";
 document.getElementById("cmd").addEventListener("submit",e=>{
   e.preventDefault(); const c=cmdIn.value.trim().toUpperCase().replace(/\s*<?GO>?$/,"");
   if(!c){ msg.textContent=HELP; return; }
