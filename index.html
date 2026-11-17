@@ -338,7 +338,7 @@ const PROJECTS = [
         "Hidden Gem Score ranks games on vote-adjusted quality (Wilson lower bound), obscurity and freshness, so a 12-vote game can't outrank a proven one.",
         "Plain-English vibe search (\u201cco-op horror under 500 players\u201d) becomes filters, and a tag-weighted taste graph recommends games and explains every pick.",
         "Next.js 16 and React 19 front end, Zod-validated API routes over Roblox's web APIs, and Node's built-in SQLite, so it runs locally with zero setup."],
-   links:[["Code",GH+"bloxvault"]]},
+   links:[["Code",GH+"bloxvault"],["Write-up",SS+"finding-robloxs-hidden-gems-building"]]},
   {tk:"WC26", live:"https://petrescu-worldcup.streamlit.app", name:"2026 World Cup prediction engine", stack:"Python · NumPy · Plotly", metric:"10,000 runs", yr:"2026",
    pts:["Monte Carlo simulation of the 48-team tournament with Poisson goal scoring and exponential Elo scaling.",
         "Team profiles combine squad depth, star ratings, recent form, manager experience and macroeconomic factors.",
@@ -370,6 +370,7 @@ const PROJECTS = [
    links:[["Code",GH+"Sports-Ticket-Website"]]}
 ];
 const POSTS = [
+  ["2026-11-17","Finding Roblox's Hidden Gems","A Letterboxd-style discovery engine from the ground up","finding-robloxs-hidden-gems-building"],
   ["2026-10-02","Catching Surgical Errors in 3 Milliseconds","Adapting a hesitation detector into a safety net for robotic surgery","catching-surgical-errors-in-3-milliseconds"],
   ["2026-07-31","I Predicted the World Cup... Kind Of","What the model got right, what it got wrong","i-predicted-the-world-cup-kind-of"],
   ["2026-06-30","Moving Out of Theory","The network effects of hesitation","moving-out-of-theory","Fintech series"],
@@ -391,7 +392,7 @@ const TEAMS = [ // illustrative Elo, seeded bracket order 1..16
 /* ---------------- ticker tape ---------------- */
 const tapeItems = [
   ["SURG","3.1 ms p99","16× under budget"],["WC26","ESP 1–0 ARG","model's top two met in final"],["MAST","10,000 sims","5-model stack"],["BLXV","36 tags","taste-graph recs"],
-  ["DCF","5×5","sensitivity grid"],["PORT","Frontier","live data"],["SUBSTACK","16 posts","since Feb 2026"],["PURDUE","CS + FIN","class of 2027"],["TRANE","$85K","largest controls proposal"]
+  ["DCF","5×5","sensitivity grid"],["PORT","Frontier","live data"],["SUBSTACK","17 posts","since Feb 2026"],["PURDUE","CS + FIN","class of 2027"],["TRANE","$85K","largest controls proposal"]
 ];
 const tapeHTML = tapeItems.map(([a,b,c])=>`<span><b>${a}</b>${b} <i>▲</i> ${c}</span>`).join("");
 document.getElementById("tape").innerHTML = tapeHTML + tapeHTML;
